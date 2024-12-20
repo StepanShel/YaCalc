@@ -1,7 +1,6 @@
 package calculation
 
 import (
-	"errors"
 	"strconv"
 	"unicode"
 )
@@ -26,11 +25,11 @@ func applyOperation(a, b float64, op rune) (float64, error) {
 		return a * b, nil
 	case '/':
 		if b == 0 {
-			return 0, errors.New("division by zero")
+			return 0, DivByZero
 		}
 		return a / b, nil
 	}
-	return 0, errors.New("invalid operation")
+	return 0, UnsupportedOp
 }
 
 func Calc(expression string) (float64, error) {
@@ -64,7 +63,7 @@ func Calc(expression string) (float64, error) {
 		} else if expression[i] == ')' {
 			for len(ops) > 0 && ops[len(ops)-1] != '(' {
 				if len(nums) < 2 {
-					return 0, errors.New("invalid expression")
+					return 0, InvalExpresInBrack
 				}
 				a := nums[len(nums)-2]
 				b := nums[len(nums)-1]
@@ -78,13 +77,13 @@ func Calc(expression string) (float64, error) {
 				nums = append(nums, result)
 			}
 			if len(ops) == 0 {
-				return 0, errors.New("mismatched parentheses")
+				return 0, MissBracket
 			}
 			ops = ops[:len(ops)-1]
 		} else {
 			for len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(rune(expression[i])) {
 				if len(nums) < 2 {
-					return 0, errors.New("invalid expression")
+					return 0, InvalExp
 				}
 				a := nums[len(nums)-2]
 				b := nums[len(nums)-1]
@@ -104,7 +103,7 @@ func Calc(expression string) (float64, error) {
 
 	for len(ops) > 0 {
 		if len(nums) < 2 {
-			return 0, errors.New("invalid expression")
+			return 0, InvalExp
 		}
 		a := nums[len(nums)-2]
 		b := nums[len(nums)-1]
@@ -119,7 +118,7 @@ func Calc(expression string) (float64, error) {
 	}
 
 	if len(nums) != 1 {
-		return 0, errors.New("invalid expression")
+		return 0, InvalExp
 	}
 
 	return nums[0], nil
