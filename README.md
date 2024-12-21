@@ -6,7 +6,7 @@ How to install:
 1. Install [golang](https://go.dev/doc/install)
 2. Enter the command:
 ``` bash
-git clone github.com/StepanShel/YaCalc
+git clone https://github.com/StepanShel/YaCalc
 ```
 How to use
 ----------
