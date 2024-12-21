@@ -47,17 +47,28 @@ func GetAddr() string {
 	return port
 }
 
+func MethodMiddlware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			respJson(w, calc.UnsupportedMethod.Error())
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func CalcHandler(w http.ResponseWriter, r *http.Request) {
 	var request Request
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		respJson(w, calc.InvalidReqBody)
 		return
 	}
 	defer r.Body.Close()
 	res, err := calc.Calc(request.Expression)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		respJson(w, err.Error())
 	} else {
 		w.WriteHeader(http.StatusOK)
@@ -69,5 +80,5 @@ func CalcHandler(w http.ResponseWriter, r *http.Request) {
 
 func StartServer() {
 	http.HandleFunc("/api/v1/calculate", CalcHandler)
-	http.ListenAndServe(":"+GetAddr(), nil)
+	http.ListenAndServe(":"+GetAddr(), MethodMiddlware(CalcHandler))
 }

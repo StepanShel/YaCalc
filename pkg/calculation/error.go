@@ -9,4 +9,5 @@ var (
 	InvalExpresInBrack = errors.New("invalid expression in brackets")
 	MissBracket        = errors.New("'(' is missing")
 	InvalExp           = errors.New("invalid expression")
+	UnsupportedMethod  = errors.New("Method Not Allowed")
 )
